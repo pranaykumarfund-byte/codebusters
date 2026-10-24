@@ -1,26 +1,40 @@
 import http from 'node:http';
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { HealthverseService } from './domain.js';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const root=path.resolve(here,'..');
-const publicRoot=path.join(root,'public');
 export const service=new HealthverseService();
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
 
 async function bodyJson(req){let body='';for await(const chunk of req)body+=chunk;if(!body)return {};try{const parsed=JSON.parse(body);return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};}catch{return {};}}
 function send(res,status,payload,headers={}){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers});res.end(JSON.stringify(payload));}
+function allowedOrigins(){
+  const configured=[process.env.ALLOWED_ORIGINS,process.env.FRONTEND_URL].filter(Boolean).join(',').split(',').map(value=>value.trim()).filter(Boolean);
+  if(process.env.NODE_ENV!=='production')configured.push('http://localhost:4173','http://127.0.0.1:4173','http://localhost:5173','http://127.0.0.1:5173');
+  return new Set(configured);
+}
+function applyCors(req,res){
+  const origin=req.headers.origin;
+  if(!origin)return true;
+  if(!allowedOrigins().has(origin))return false;
+  res.setHeader('Access-Control-Allow-Origin',origin);
+  res.setHeader('Access-Control-Allow-Methods','GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers','Content-Type');
+  res.setHeader('Access-Control-Max-Age','600');
+  res.setHeader('Vary','Origin');
+  return true;
+}
 function statusFor(result){if(result.success)return 200;return ({VALIDATION:400,NOT_FOUND:404,ACCESS_DENIED:403,INVALID_STATE:409,CONFLICT:409,TIMEOUT:504})[result.error?.code]||500;}
 async function api(req,res,url){
   const method=req.method||'GET',p=url.pathname,parts=p.split('/').filter(Boolean).map(decodeURIComponent);
   let result;
   if(method==='GET'&&p==='/api/bootstrap')result=await service.getBootstrap();
   else if(method==='PATCH'&&p==='/api/profile')result=await service.updateProfile(await bodyJson(req));
+  else if(method==='POST'&&p==='/api/sensitive-issues')result=await service.createSensitiveIssue(await bodyJson(req));
   else if(method==='GET'&&p==='/api/dashboard')result=await service.getDashboardData();
   else if(method==='GET'&&p==='/api/records')result=await service.getHealthRecords(Object.fromEntries(url.searchParams));
   else if(method==='POST'&&p==='/api/records')result=await service.createHealthRecord(await bodyJson(req));
+  else if(method==='POST'&&p==='/api/demo/doctor-upload')result=await service.simulateDoctorUpload();
   else if(parts[0]==='api'&&parts[1]==='records'&&parts.length===3&&method==='GET')result=await service.getRecordById(parts[2]);
   else if(parts[0]==='api'&&parts[1]==='records'&&parts.length===3&&method==='PATCH')result=await service.updateRecordMetadata(parts[2],await bodyJson(req));
   else if(parts[0]==='api'&&parts[1]==='records'&&parts[3]==='corrections'&&method==='POST')result=await service.createCorrection(parts[2],await bodyJson(req));
@@ -52,16 +66,18 @@ async function api(req,res,url){
 const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
-    if(url.pathname.startsWith('/api/'))return await api(req,res,url);
-    const requested=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));
-    const file=path.resolve(publicRoot,requested);
-    if(!file.startsWith(publicRoot+path.sep)&&file!==publicRoot){res.writeHead(403);res.end('Forbidden');return;}
-    const data=await readFile(file);
-    res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'});res.end(data);
-  }catch(error){if(error.code==='ENOENT'){res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});res.end('Not found');return;}console.error('Healthverse request error:',error.message);if(!res.headersSent)send(res,500,{success:false,data:null,error:{code:'INTERNAL',message:'The local demo service encountered an error.'},timestamp:new Date().toISOString(),synthetic:true});}
+    if(url.pathname==='/healthz'&&req.method==='GET'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});res.end('ok');return;}
+    if(url.pathname.startsWith('/api/')){
+      if(!applyCors(req,res)){send(res,403,{success:false,data:null,error:{code:'ORIGIN_DENIED',message:'This frontend origin is not allowed.'},timestamp:new Date().toISOString(),synthetic:true});return;}
+      if(req.method==='OPTIONS'){res.writeHead(204);res.end();return;}
+      return await api(req,res,url);
+    }
+    res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8','X-Content-Type-Options':'nosniff'});res.end('VIBA backend API. Deploy the frontend separately.');
+  }catch(error){console.error('VIBA API request error:',error.message);if(!res.headersSent)send(res,500,{success:false,data:null,error:{code:'INTERNAL',message:'The VIBA API encountered an error.'},timestamp:new Date().toISOString(),synthetic:true});}
 });
 
 const port=Number(process.env.PORT||process.argv[2]||4173);
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))server.listen(port,'127.0.0.1',()=>console.log(`VIBA demo ready at http://127.0.0.1:${port}`));
+const host=process.env.HOST||(process.env.NODE_ENV==='production'?'0.0.0.0':'127.0.0.1');
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))server.listen(port,host,()=>console.log(`VIBA demo ready at http://${host}:${port}`));
 
 export {server};

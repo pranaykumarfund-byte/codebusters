@@ -11,6 +11,7 @@ const initialRecords = () => [
   { id:'HV-LAB-1098', title:'Lipid panel — scanned copy', type:'Laboratory report', category:'Laboratory reports', provider:'Starlight Family Clinic', location:'Hyderabad, TS', eventDate:'2026-04-21', reportDate:'2026-04-13', uploadDate:'2026-05-02', source:'Patient-uploaded scan', provenance:'Re-uploaded scan · date printed on scan needs human review', verification:'Needs review', values:'Total cholesterol: 182 mg/dL · HDL: 54 mg/dL · LDL: 106 mg/dL', conflicts:['Possible duplicate of HV-LAB-1042','Event date mismatch'], sharing:'Not shared', version:1, possibleDuplicateOf:'HV-LAB-1042', history:[] },
   { id:'HV-RX-2071', title:'Handwritten prescription', type:'Prescription', category:'Prescriptions', provider:'Dr. Meera Rao', location:'Lotus Care Centre · Hyderabad, TS', eventDate:'2026-05-09', reportDate:'2026-05-09', uploadDate:'2026-05-10', source:'Phone scan · OCR demo', provenance:'Synthetic handwritten sample · OCR output is not a medical instruction', verification:'Human verification required', values:'Dosage field: “5? mg” · confidence 42%', conflicts:['Dosage text is uncertain'], ocr:{ field:'dosage', text:'5? mg', confidence:0.42, verified:false }, sharing:'Not shared', version:1, history:[] },
   { id:'HV-CNS-3304', title:'Follow-up consultation note', type:'Consultation note', category:'Consultation notes', provider:'Dr. Meera Rao', location:'Lotus Care Centre · Hyderabad, TS', eventDate:'2026-05-09', reportDate:'2026-05-10', uploadDate:'2026-05-11', source:'Clinic portal export', provenance:'Patient-uploaded document', verification:'Source verified', values:'Follow-up visit recorded. Source note contains clinician-authored observations.', conflicts:[], sharing:'Not shared', version:1, history:[] },
+  { id:'HV-UP-3305', title:'Sample doctor-uploaded report', type:'Consultation note', category:'Consultation notes', provider:'Dr. Meera Rao · fictional demo provider', location:'Lotus Care Centre · Hyderabad, TS', eventDate:'2026-10-24', reportDate:'2026-10-24', uploadDate:'2026-10-24', source:'Simulated doctor upload', provenance:'Fictional sample added to demonstrate doctor upload; no real doctor or file involved', verification:'Source verified', values:'Sample upload placeholder. No medical document or clinical findings are included.', conflicts:[], sharing:'Not shared', version:1, history:[] },
   { id:'HV-IMG-4185', title:'Chest imaging report', type:'Imaging report', category:'Imaging reports', provider:'Harbor Diagnostics', providerSourceValue:'Harbor Medical Centre', location:'Secunderabad, TS', eventDate:'2026-02-18', reportDate:'2026-02-20', uploadDate:'2026-02-20', source:'Diagnostic center export', provenance:'Imported from synthetic demo folder', verification:'Needs review', values:'Report text is preserved as supplied by the fictional source.', conflicts:['Provider information differs between the report header and export metadata'], sharing:'Not shared', version:1, history:[] },
   { id:'HV-DS-5120', title:'Day-care discharge summary', type:'Discharge summary', category:'Discharge summaries', provider:'', location:'Hyderabad, TS', eventDate:'2025-12-03', reportDate:'2025-12-03', uploadDate:'2025-12-08', source:'Scanned document', provenance:'OCR-assisted extraction · original scan retained', verification:'Needs review', values:'Discharge date is present; attending provider field is blank.', conflicts:['Missing provider metadata'], sharing:'Not shared', version:1, history:[] },
   { id:'HV-VAX-6833', title:'Seasonal vaccination record', type:'Vaccination record', category:'Vaccination records', provider:'Starlight Family Clinic', location:'Hyderabad, TS', eventDate:'2025-10-11', reportDate:'2025-10-11', uploadDate:'2025-10-12', source:'Patient-held record', provenance:'Synthetic record · manually entered source label', verification:'Patient supplied', values:'Vaccination entry recorded by the fictional patient.', conflicts:[], sharing:'Not shared', version:1, history:[] },
@@ -61,12 +62,13 @@ export function verifyAudit(events) {
 export function createState() {
   const records = initialRecords();
   const state = {
-    profile:{name:'Samira Reddy',email:'',phone:'',dateOfBirth:'',label:'Fictional patient · demo account'},
+    profile:{name:'Samira Reddy',email:'',phone:'',dateOfBirth:'',gender:'',bloodGroup:'',label:'Fictional patient · demo account'},
     records,
+    sensitiveIssues:[],
     grants:[],
     caregivers:[{id:'CG-01',name:'Ananya Rao',relationship:'Daughter · fictional',status:'No access yet',permissions:[]}],
     providers:[{id:'P-01',name:'Starlight Family Clinic',connectedRecords:3},{id:'P-02',name:'Lotus Care Centre',connectedRecords:2},{id:'P-03',name:'Harbor Diagnostics',connectedRecords:1},{id:'P-04',name:'Cedar Diagnostics',connectedRecords:1}],
-    notifications:[{id:'N-01',title:'Date review requested',body:'Two synthetic lipid reports show different event dates.',time:now(),kind:'review'},{id:'N-02',title:'OCR needs a human check',body:'A sample prescription contains uncertain text.',time:now(),kind:'review'}],
+    notifications:[{id:'N-UPLOAD-DEMO',title:'Sample doctor upload',body:'Dr. Meera Rao (fictional) added “Sample doctor-uploaded report” to My Health Records. Illustrative notification only; no real doctor uploaded a file.',time:now(),kind:'doctor-upload',recordId:'HV-UP-3305'},{id:'N-01',title:'Date review requested',body:'Two synthetic lipid reports show different event dates.',time:now(),kind:'review'},{id:'N-02',title:'OCR needs a human check',body:'A sample prescription contains uncertain text.',time:now(),kind:'review'}],
     audit:[], scenarios:{}, demoState:{stale:false,outage:false,conflictingUpdate:null,selectedProvider:null},
     edgeCases, freshness:{lastRefreshed:now(),source:'Synthetic local demo API',staleAfterMinutes:30},
   };
@@ -116,19 +118,32 @@ export class HealthverseService {
   constructor(state = createState()) { this.state = state; }
   async getBootstrap() {
     await sleep();
-    return response({profile:copy(this.state.profile),records:copy(this.state.records),providers:copy(this.state.providers),grants:copy(this.state.grants).map(g=>({...g,status:grantStatus(g)})),caregivers:copy(this.state.caregivers),notifications:copy(this.state.notifications),conflicts:conflictsFor(this.state),edgeCases:copy(this.state.edgeCases),freshness:copy(this.state.freshness),demoState:copy(this.state.demoState)});
+    return response({profile:copy(this.state.profile),records:copy(this.state.records),sensitiveIssues:copy(this.state.sensitiveIssues),providers:copy(this.state.providers),grants:copy(this.state.grants).map(g=>({...g,status:grantStatus(g)})),caregivers:copy(this.state.caregivers),notifications:copy(this.state.notifications),conflicts:conflictsFor(this.state),edgeCases:copy(this.state.edgeCases),freshness:copy(this.state.freshness),demoState:copy(this.state.demoState)});
   }
   async updateProfile(payload={}) {
     await sleep();
-    const name=String(payload.name??'').trim(),email=String(payload.email??'').trim(),phone=String(payload.phone??'').trim(),dateOfBirth=String(payload.dateOfBirth??'').trim();
+    const name=String(payload.name??'').trim(),email=String(payload.email??'').trim(),phone=String(payload.phone??'').trim(),dateOfBirth=String(payload.dateOfBirth??'').trim(),gender=String(payload.gender??'').trim(),bloodGroup=String(payload.bloodGroup??'').trim();
     if(!name||name.length>80)return fail('VALIDATION','Enter a name between 1 and 80 characters.');
     if(email.length>120||(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)))return fail('VALIDATION','Enter a valid email address up to 120 characters, or leave it blank.');
     if(phone.length>24||(phone&&!/^\+?[0-9\s().-]{7,24}$/.test(phone)))return fail('VALIDATION','Enter a valid phone number, or leave it blank.');
     if(dateOfBirth){const date=new Date(`${dateOfBirth}T12:00:00Z`);if(!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)||Number.isNaN(date.getTime())||date.toISOString().slice(0,10)!==dateOfBirth||dateOfBirth<'1900-01-01'||dateOfBirth>now().slice(0,10))return fail('VALIDATION','Enter a valid date of birth between 1900 and today.');}
-    const next={...this.state.profile,name,email,phone,dateOfBirth};
-    const changed=['name','email','phone','dateOfBirth'].filter(field=>next[field]!==this.state.profile[field]);
+    if(!['','Female','Male','Non-binary','Other','Prefer not to say'].includes(gender))return fail('VALIDATION','Choose a gender option from the list, or leave it unset.');
+    if(!['','A+','A-','B+','B-','AB+','AB-','O+','O-','Unknown'].includes(bloodGroup))return fail('VALIDATION','Choose a blood group from the provided options, or leave it unset.');
+    const next={...this.state.profile,name,email,phone,dateOfBirth,gender,bloodGroup};
+    const changed=['name','email','phone','dateOfBirth','gender','bloodGroup'].filter(field=>next[field]!==this.state.profile[field]);
     if(changed.length){this.state.profile=next;makeAuditEvent(this.state,'Fictional patient','PROFILE_UPDATED','demo profile','success',`Profile fields updated: ${changed.join(', ')}`);}
     return response(copy(this.state.profile));
+  }
+  async createSensitiveIssue(payload={}) {
+    await sleep();
+    const categories=['Privacy or data sharing','Doctor/provider access','Caregiver access','Record shown or missing','Other privacy concern'];
+    const category=String(payload.category||''),description=String(payload.description||'').trim();
+    if(!categories.includes(category))return fail('VALIDATION','Choose a sensitive issue category.');
+    if(description.length<8||description.length>400)return fail('VALIDATION','Describe the privacy or access concern in 8 to 400 characters.');
+    const issue={id:`SI-${randomUUID().slice(0,8).toUpperCase()}`,category,description,submittedAt:now(),status:'Received · demo only'};
+    this.state.sensitiveIssues.unshift(issue);
+    makeAuditEvent(this.state,'Fictional patient','SENSITIVE_ISSUE_REPORTED',issue.id,'success','Privacy/access concern logged in synthetic demo; no real support channel contacted');
+    return response(copy(issue));
   }
   async getDashboardData() {
     await sleep();
@@ -136,6 +151,14 @@ export class HealthverseService {
     return response({totalRecords:this.state.records.length,providers:this.state.providers.length,activeConsents:active.length,conflicts:conflictsFor(this.state).length,expiringShares:active.filter(g=>new Date(g.expiresAt)-Date.now()<48*3600000).length,recentEvents:copy(this.state.audit).slice(-6).reverse(),records:copy(this.state.records).sort((a,b)=>b.eventDate.localeCompare(a.eventDate)).slice(0,5),providersList:copy(this.state.providers),notices:copy(this.state.notifications),stale:this.state.demoState.stale});
   }
   async getHealthRecords(filters) { await sleep(); return response(recordsFor(this.state,filters).map(copy)); }
+  async simulateDoctorUpload() {
+    await sleep();
+    const record={id:`HV-UP-${randomUUID().slice(0,8).toUpperCase()}`,title:'Doctor-uploaded sample report',type:'Consultation note',category:'Consultation notes',provider:'Dr. Meera Rao · fictional demo provider',location:'Lotus Care Centre · Hyderabad, TS',eventDate:now().slice(0,10),reportDate:now().slice(0,10),uploadDate:now().slice(0,10),source:'Simulated doctor upload',provenance:'Fictional sample upload; no real doctor or file involved',verification:'Patient supplied',values:'Sample upload placeholder. No medical document or clinical findings are included.',conflicts:[],sharing:'Not shared',version:1,history:[]};
+    this.state.records.unshift(record);
+    this.state.notifications.unshift({id:`N-${randomUUID()}`,title:'A doctor uploaded a file',body:`Dr. Meera Rao (fictional) uploaded “${record.title}”. Demo only; no real file was uploaded.`,time:now(),kind:'doctor-upload',recordId:record.id});
+    makeAuditEvent(this.state,'Fictional doctor','DEMO_DOCTOR_UPLOAD',record.id,'success','Synthetic upload and notification created');
+    return response(copy(record));
+  }
   async getRecordById(id) { await sleep(); const record=findRecord(this.state,id); return record ? response(copy(record)) : fail('NOT_FOUND','Synthetic record was not found.'); }
   async createHealthRecord(payload) {
     await sleep();

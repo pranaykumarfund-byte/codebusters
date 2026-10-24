@@ -262,6 +262,10 @@ select option { color: #30364b; background: #fff; }
 .ai-chat-form{display:flex;gap:7px;padding:0 14px}
 .ai-chat-form input{min-width:0;flex:1;border:1px solid #e2e5ef;border-radius:9px;padding:8px 10px;background:#fff;color:#353b4d;font-size:9px}
 .ai-chat-form .btn{flex:none}
+.ai-chat-mic{display:grid;width:34px;height:34px;flex:none;place-items:center;border:1px solid #e2e5ef;border-radius:9px;background:#fff;color:#5964ca;cursor:pointer}
+.ai-chat-mic svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ai-chat-mic:hover{border-color:#aeb4ed;background:#f3f4ff}
+.ai-chat-mic.is-listening{border-color:#e85c68;background:#fff0f1;color:#cf3e4b;box-shadow:0 0 0 3px rgba(232,92,104,.1)}
 .health-overview-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .health-overview-actions .btn{color:#565ec4;background:#fff;border-color:#e4e6f2}
 .health-metric-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -269,3 +273,5 @@ select option { color: #30364b; background: #fff; }
 @media(max-width:850px){.overview-side-stack{grid-template-columns:1fr}.ai-chat-card{min-height:320px}}
 @media(max-width:600px){.health-overview-heading{align-items:flex-start}.health-overview-actions{gap:5px}.health-overview-actions .badge{white-space:normal}.ai-chat-messages{max-height:190px}.ai-chat-form{padding:0 10px}.ai-chat-disclaimer{margin-left:12px;margin-right:12px}}
 @media(max-width:600px){.health-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.patient-next-steps{border-color:#e7e9f2;background:linear-gradient(155deg,#fff,#f8f9fd);box-shadow:0 8px 24px rgba(45,50,100,.055)}.patient-next-kicker{color:#5964ca}.patient-next-steps-heading h3{color:#343a52}.patient-next-steps-heading p{color:#777f93}.patient-next-step{background:#fff;border-color:#e7e9f2;color:#353b53}.patient-next-step:hover,.patient-next-step:focus-visible{background:#f5f6ff;border-color:#aeb4ed}.patient-next-number{background:#eef0ff;color:#555fc5}.patient-next-copy strong{color:#373d55}.patient-next-copy small{color:#747c90}.patient-next-arrow{color:#626bd0}

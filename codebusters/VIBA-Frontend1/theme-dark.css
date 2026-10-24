@@ -59,6 +59,10 @@ body { background: radial-gradient(ellipse at 72% -16%, rgba(33, 101, 119, .2), 
 .ai-chat-form input { min-width: 0; flex: 1; border: 1px solid rgba(160, 194, 207, .16); border-radius: 9px; padding: 8px 10px; background: rgba(7, 20, 29, .65); color: #dce8ec; font-size: 9px; }
 .ai-chat-form input::placeholder { color: #738994; }
 .ai-chat-form .btn { flex: none; }
+.ai-chat-mic { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border: 1px solid rgba(160, 194, 207, .18); border-radius: 9px; background: rgba(7, 20, 29, .65); color: #8ddacc; cursor: pointer; }
+.ai-chat-mic svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ai-chat-mic:hover { border-color: rgba(111, 216, 199, .5); background: rgba(119, 204, 194, .12); }
+.ai-chat-mic.is-listening { border-color: #fb7a85; background: rgba(251, 122, 133, .14); color: #ff8993; box-shadow: 0 0 0 3px rgba(251, 122, 133, .1); }
 
 @media (max-width: 1100px) { .health-metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 850px) { .overview-side-stack { grid-template-columns: 1fr; } .ai-chat-card { min-height: 320px; } }
@@ -77,3 +81,51 @@ body { background: radial-gradient(ellipse at 72% -16%, rgba(33, 101, 119, .2), 
   .ai-chat-form { padding: 0 10px; }
   .ai-chat-disclaimer { margin-right: 12px; margin-left: 12px; }
 }
+
+/* Anchor wellness reminders in the open area below the provider row. */
+.scene-card { display: flex; flex-direction: column; align-self: start; }
+.scene-wrap { flex: 0 0 auto; }
+.scene-wrap canvas { width: 100%; }
+.scene-fallback { right: auto; width: 100%; }
+.scene-label-right { display: none; }
+.wellness-panel { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(135px, .7fr) minmax(0, 1.5fr) auto; grid-template-areas: "heading tip controls" "note note note"; align-items: center; gap: 7px 12px; width: auto; min-width: 0; margin: 12px 14px; padding: 10px 12px; border: 1px solid rgba(132, 200, 201, .15); border-radius: 12px; background: linear-gradient(155deg, rgba(14, 36, 48, .92), rgba(7, 22, 32, .92)); box-shadow: 0 10px 32px rgba(0, 0, 0, .18); }
+.wellness-panel-heading { display: flex; flex-direction: column; gap: 5px; }
+.wellness-panel-heading { grid-area: heading; }
+.wellness-kicker { color: #77d9ca; font-size: 8px; font-weight: 700; letter-spacing: 1px; }
+.wellness-panel-heading strong { color: #e0efed; font: 600 10px Manrope, sans-serif; }
+.wellness-tip { grid-area: tip; display: flex; min-width: 0; align-items: center; gap: 11px; margin: 0; padding: 9px 11px; border: 1px solid rgba(150, 195, 201, .1); border-radius: 10px; background: rgba(6, 20, 29, .55); }
+.wellness-tip-icon { display: grid; flex: 0 0 38px; width: 38px; height: 38px; place-items: center; border-radius: 12px; background: rgba(112, 216, 208, .12); color: #a3ead3; font-size: 19px; }
+.wellness-tip strong { color: #e1edee; font: 600 10px Manrope, sans-serif; }
+.wellness-tip p { margin: 5px 0 0; color: #94aeb5; font-size: 9px; line-height: 1.55; }
+.wellness-controls { grid-area: controls; display: flex; align-items: center; gap: 7px; color: #829ba3; font-size: 8px; }
+.wellness-controls button { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid rgba(149, 190, 201, .15); border-radius: 8px; background: rgba(112, 153, 168, .08); color: #a8e9dc; cursor: pointer; }
+.wellness-controls button:hover { background: rgba(119, 204, 194, .16); border-color: rgba(111, 216, 199, .35); }
+.wellness-footnote { grid-area: note; margin: 0; color: #78939d; font-size: 7px; line-height: 1.4; }
+@media (max-width: 850px) {
+  .wellness-panel { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "heading controls" "tip tip" "note note"; gap: 8px; margin-right: 10px; margin-left: 10px; padding: 9px; }
+  .wellness-tip { gap: 8px; }
+}
+@media (max-width: 600px) {
+  .wellness-panel { gap: 6px; margin-right: 7px; margin-left: 7px; padding: 8px; }
+  .wellness-panel-heading { gap: 3px; }
+  .wellness-kicker { font-size: 7px; }
+  .wellness-panel-heading strong { font-size: 9px; }
+  .wellness-tip { gap: 7px; padding: 7px; }
+  .wellness-tip-icon { flex-basis: 29px; width: 29px; height: 29px; font-size: 15px; }
+  .wellness-tip strong { font-size: 9px; }
+  .wellness-tip p { font-size: 8px; line-height: 1.4; }
+  .wellness-controls button { width: 24px; height: 24px; }
+}
+
+.patient-next-steps{border-color:rgba(132,200,201,.15);background:linear-gradient(155deg,rgba(14,36,48,.94),rgba(7,22,32,.94));box-shadow:0 10px 32px rgba(0,0,0,.12)}.patient-next-kicker{color:#77d9ca}.patient-next-steps-heading h3{color:#e0efed}.patient-next-steps-heading p{color:#849da5}.patient-next-step{background:rgba(7,20,29,.53);border-color:rgba(149,190,201,.13);color:#d5e6e7}.patient-next-step:hover,.patient-next-step:focus-visible{background:rgba(28,69,75,.56);border-color:rgba(111,216,199,.38)}.patient-next-number{background:rgba(112,216,208,.12);color:#92e4d3}.patient-next-copy strong{color:#d9e8e8}.patient-next-copy small{color:#8ba3aa}.patient-next-arrow{color:#85dccc}
+
+.wellness-tip-viewport{grid-area:tip;position:relative;min-width:0;min-height:58px;overflow:hidden;border-radius:10px}
+.wellness-tip-viewport .wellness-tip{grid-area:auto;width:100%;min-height:58px;transition:transform .38s cubic-bezier(.2,.7,.25,1),opacity .28s ease;will-change:transform,opacity}
+.wellness-tip-viewport .wellness-tip.is-exiting-left{opacity:0;transform:translateX(-20px)}
+.wellness-tip-viewport .wellness-tip.is-exiting-right{opacity:0;transform:translateX(20px)}
+.wellness-tip-viewport .wellness-tip.is-entering-from-right{animation:wellness-enter-right .42s cubic-bezier(.2,.7,.25,1) both}
+.wellness-tip-viewport .wellness-tip.is-entering-from-left{animation:wellness-enter-left .42s cubic-bezier(.2,.7,.25,1) both}
+@keyframes wellness-enter-right{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wellness-enter-left{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.wellness-controls .wellness-pause{font-size:10px}
+@media (prefers-reduced-motion:reduce){.wellness-tip-viewport .wellness-tip,.wellness-tip-viewport .wellness-tip.is-exiting-left,.wellness-tip-viewport .wellness-tip.is-exiting-right{transition:none;animation:none;transform:none;opacity:1}}
