@@ -1,0 +1,79 @@
+/* VIBA dark navy and teal dashboard, matching the supplied reference. */
+:root {
+  color-scheme: dark;
+  --bg: #07131e;
+  --panel: #0c1b28;
+  --panel-2: #102432;
+  --line: rgba(174, 207, 220, .12);
+  --muted: #91a7b5;
+  --soft: #c1d0d7;
+  --cyan: #70d8d0;
+  --mint: #a3ead3;
+  --blue: #70b7e8;
+  --amber: #edc67e;
+  --red: #ee8f9a;
+  --radius: 16px;
+  --shadow: 0 18px 60px rgba(0, 0, 0, .25);
+}
+
+html, body { background: #07131e; color: #e9f1f5; }
+body { background: radial-gradient(ellipse at 72% -16%, rgba(33, 101, 119, .2), transparent 38%), #07131e; }
+.sidebar { position: sticky; top: 0; align-self: flex-start; height: 100vh; min-height: 100vh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(129, 168, 180, .25) transparent; }
+.health-overview { margin: 15px 0 16px; padding: 17px; background: linear-gradient(155deg, rgba(16, 37, 50, .96), rgba(10, 27, 39, .94)); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+.health-overview-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 1px 13px; }
+.health-overview-heading .eyebrow { margin: 0 0 3px; color: #72d2c7; }
+.health-overview-heading h2 { margin: 0; color: #e2eef0; font: 650 15px Manrope, sans-serif; }
+.health-overview-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.health-overview-actions .btn { color: #d5e6e7; background: rgba(19, 41, 53, .75); border-color: rgba(150, 190, 200, .16); }
+.health-metric-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; }
+.health-metric { display: flex; align-items: flex-start; gap: 10px; min-height: 91px; padding: 12px; background: linear-gradient(145deg, #102432, #0b1c28); border: 1px solid rgba(174, 207, 220, .1); border-radius: 11px; }
+.health-metric-icon { display: grid; place-items: center; flex: 0 0 29px; width: 29px; height: 29px; border-radius: 9px; background: rgba(112, 216, 208, .11); color: #82dfd1; font-size: 16px; }
+.health-metric-label { display: block; color: #91a7b5; font-size: 9px; }
+.health-metric-value { display: block; margin-top: 7px; color: #edf5f5; font: 650 12px Manrope, sans-serif; line-height: 1.35; overflow-wrap: anywhere; }
+.health-metric-source { display: block; margin-top: 5px; color: #8199a4; font-size: 8px; line-height: 1.45; }
+.recent-lab-card { margin-top: 10px; padding: 13px 14px; background: rgba(7, 20, 29, .55); border: 1px solid rgba(174, 207, 220, .1); border-radius: 11px; }
+.recent-lab-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.recent-lab-heading h3 { margin: 4px 0 0; color: #e1ecee; font: 650 12px Manrope, sans-serif; }
+.report-date { color: #91a7b5; font-size: 9px; }
+.lab-values { margin: 9px 0 5px; padding: 9px 10px; border-radius: 8px; background: rgba(16, 37, 50, .8); color: #d8e7e8; font-size: 10px; font-weight: 600; line-height: 1.6; }
+.recent-lab-card .subtle-note { margin: 6px 0; }
+.recent-lab-card .link-button { margin-top: 4px; font-size: 9px; }
+.health-data-note { margin: 10px 1px 0; color: #8198a1; font-size: 8px; line-height: 1.5; }
+
+.overview-side-stack { display: grid; grid-template-rows: auto auto; gap: 14px; align-content: start; min-width: 0; }
+.ai-chat-card { display: flex; flex-direction: column; min-height: 340px; padding-bottom: 13px; }
+.ai-chat-header { padding-bottom: 10px; }
+.ai-chat-header .card-header p { margin-top: 4px; }
+.ai-chat-disclaimer { margin: 0 17px 9px; padding: 8px 9px; border: 1px solid rgba(174, 207, 220, .1); border-radius: 8px; background: rgba(7, 20, 29, .58); color: #91a7b5; font-size: 8px; line-height: 1.5; }
+.ai-chat-messages { display: flex; flex: 1; flex-direction: column; gap: 9px; min-height: 146px; max-height: 220px; overflow: auto; padding: 3px 14px 10px; scroll-behavior: smooth; }
+.ai-chat-message { display: flex; align-items: flex-start; gap: 8px; max-width: 95%; }
+.ai-chat-message.user { align-self: flex-end; flex-direction: row-reverse; }
+.ai-chat-avatar { display: grid; place-items: center; flex: 0 0 25px; width: 25px; height: 25px; border-radius: 9px; background: rgba(112, 216, 208, .12); color: #9ae8d7; font-size: 8px; font-weight: 700; }
+.ai-chat-message.user .ai-chat-avatar { background: rgba(112, 183, 232, .15); color: #a4d4f3; }
+.ai-chat-message p { margin: 0; padding: 8px 10px; border: 1px solid rgba(174, 207, 220, .1); border-radius: 4px 10px 10px; background: rgba(7, 20, 29, .58); color: #c3d4d8; font-size: 9px; line-height: 1.55; overflow-wrap: anywhere; }
+.ai-chat-message.user p { border-color: rgba(112, 216, 208, .16); border-radius: 10px 4px 10px 10px; background: rgba(44, 105, 100, .18); }
+.ai-chat-prompts { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 9px; }
+.ai-chat-prompt { border: 1px solid rgba(149, 190, 201, .15); border-radius: 20px; background: rgba(112, 153, 168, .07); color: #91ded1; padding: 5px 8px; font-size: 8px; cursor: pointer; }
+.ai-chat-prompt:hover { background: rgba(119, 204, 194, .12); border-color: rgba(111, 216, 199, .3); }
+.ai-chat-form { display: flex; gap: 7px; padding: 0 14px; }
+.ai-chat-form input { min-width: 0; flex: 1; border: 1px solid rgba(160, 194, 207, .16); border-radius: 9px; padding: 8px 10px; background: rgba(7, 20, 29, .65); color: #dce8ec; font-size: 9px; }
+.ai-chat-form input::placeholder { color: #738994; }
+.ai-chat-form .btn { flex: none; }
+
+@media (max-width: 1100px) { .health-metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 850px) { .overview-side-stack { grid-template-columns: 1fr; } .ai-chat-card { min-height: 320px; } }
+@media (max-width: 850px) { .sidebar { position: fixed; top: 0; left: 0; bottom: 0; align-self: auto; height: 100vh; min-height: 100vh; overflow-y: auto; } }
+@media (max-width: 600px) {
+  .health-overview { padding: 13px; }
+  .health-overview-heading { align-items: flex-start; }
+  .health-overview-actions { gap: 5px; }
+  .health-overview-actions .badge { white-space: normal; }
+  .health-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .health-metric { min-height: 95px; gap: 7px; padding: 9px; }
+  .health-metric-value { font-size: 10px; }
+  .recent-lab-heading { display: block; }
+  .report-date { display: block; margin-top: 6px; }
+  .ai-chat-messages { max-height: 190px; }
+  .ai-chat-form { padding: 0 10px; }
+  .ai-chat-disclaimer { margin-right: 12px; margin-left: 12px; }
+}

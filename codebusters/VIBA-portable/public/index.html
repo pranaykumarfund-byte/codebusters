@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07131e">
+  <meta name="description" content="VIBA — ABHA redefined....! A synthetic digital health journey demo">
+  <title>VIBA · ABHA redefined....!</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/theme-dark.css">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="brand"><div class="brand-mark"><span></span><span></span><span></span></div><span class="brand-copy"><span class="brand-name">VIBA</span><small class="brand-tagline">ABHA redefined....!</small></span><button id="collapseNav" class="icon-button sidebar-collapse" aria-label="Collapse navigation" title="Collapse navigation">‹</button></div>
+      <div class="workspace-label">PATIENT SPACE</div>
+      <nav id="primaryNav" class="primary-nav"></nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-card"><span class="privacy-icon">✳</span><div><strong>Private by design</strong><small>You control what gets shared.</small></div></div>
+        <button class="nav-item" data-nav="settings"><span class="nav-icon">⚙</span><span data-i18n="nav.settings">Settings</span></button>
+        <div class="sidebar-profile"><div class="avatar avatar-small" id="sidebarProfileAvatar">SR</div><div class="profile-copy"><strong id="sidebarProfileName">Samira Reddy</strong><small>Demo patient</small></div><span class="profile-more">•••</span></div>
+      </div>
+    </aside>
+    <div class="app-main">
+      <header class="topbar">
+        <button id="mobileMenu" class="icon-button mobile-menu" aria-label="Open navigation">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="pageCrumb">Overview</strong></div>
+        <div class="topbar-actions">
+          <label class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Search records, providers…" aria-label="Search records and providers"><kbd>⌘ K</kbd></label>
+          <button class="language-button" id="languageToggle" aria-label="Change language">తెలుగు</button>
+          <div class="notification-wrap"><button id="notificationButton" class="icon-button notification-button" aria-label="Notifications">♧<i></i></button><div class="notification-popover" id="notificationPopover" hidden></div></div>
+          <button id="profileButton" class="top-profile" aria-label="Demo profile menu"><span class="avatar" id="profileAvatar">SR</span><span><strong id="profileName">Samira Reddy</strong><small>Demo patient</small></span><b>⌄</b></button>
+        </div>
+      </header>
+      <div class="demo-ribbon"><span class="ribbon-pulse"></span> SYNTHETIC DEMO DATA <span class="ribbon-divider">·</span> No real patient records or provider connections <span class="ribbon-right" id="freshnessIndicator">LOCAL MOCK API · READY</span></div>
+      <main id="mainContent" tabindex="-1"><div class="loading-state"><span class="spinner"></span>Preparing your health space…</div></main>
+      <footer class="app-footer"><span>VIBA <span class="footer-dot">·</span> ABHA redefined....! · Patient-controlled health journey</span><span>Every record is fictional. This demo is not medical advice.</span></footer>
+    </div>
+  </div>
+  <div id="modalRoot"></div>
+  <div id="toastRegion" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="sr-only" id="announcer" aria-live="polite"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
